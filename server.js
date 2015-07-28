@@ -5,6 +5,9 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
+
 // send our index.html file to the user for the home page
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
@@ -16,6 +19,12 @@ var adminRouter = express.Router();
 
 adminRouter.use(function(req,res,next){
   console.log(req.method, req.url);
+  next();
+});
+
+adminRouter.param('name', function(req,res,next,name){
+  console.log('doing name validations on ' + name);
+  req.name = 'Pedro'
   next();
 });
 
@@ -34,7 +43,7 @@ adminRouter.get('/posts', function(req, res) {
 });
 
 adminRouter.get('/users/:name', function(req, res) {
-  res.send('hello ' + req.params.name + '!');
+  res.send('hello ' + req.name + '!');
 });
 
 // apply the routes to our application
